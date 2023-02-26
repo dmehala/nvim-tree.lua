@@ -1,24 +1,6 @@
 local M = {}
 local log = require "nvim-tree.log"
 
-local has_cygpath = vim.fn.executable "cygpath" == 1
-
-local function norm_path(path)
-  -- git always returns path with forward slashes
-  if vim.fn.has "win32" == 1 then
-    -- msys2 git support
-    if has_cygpath then
-      path = vim.fn.system("cygpath -w " .. vim.fn.shellescape(path))
-      if vim.v.shell_error ~= 0 then
-        return nil
-      end
-    end
-    path = path:gsub("/", "\\")
-  end
-
-  return path
-end
-
 function M.get_toplevel(cwd)
   local profile = log.profile_start("git toplevel %s", cwd)
 

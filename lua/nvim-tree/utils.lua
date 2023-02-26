@@ -42,6 +42,24 @@ function M.path_split(path)
   return path:gmatch("[^" .. path_separator .. "]+" .. path_separator .. "?")
 end
 
+local has_cygpath = vim.fn.executable "cygpath" == 1
+
+local function norm_path(path)
+  -- git always returns path with forward slashes
+  if vim.fn.has "win32" == 1 then
+    -- msys2 git support
+    if has_cygpath then
+      path = vim.fn.system("cygpath -w " .. vim.fn.shellescape(path))
+      if vim.v.shell_error ~= 0 then
+        return nil
+      end
+    end
+    path = path:gsub("/", "\\")
+  end
+
+  return path
+end
+
 ---Get the basename of the given path.
 ---@param path string
 ---@return string
