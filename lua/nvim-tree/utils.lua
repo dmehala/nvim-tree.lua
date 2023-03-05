@@ -8,7 +8,6 @@ local M = {
 M.is_unix = vim.fn.has "unix" == 1
 M.is_macos = vim.fn.has "mac" == 1 or vim.fn.has "macunix" == 1
 M.is_wsl = vim.fn.has "wsl" == 1
--- false for WSL
 M.is_windows = vim.fn.has "win32" == 1 or vim.fn.has "win32unix" == 1
 
 function M.path_to_matching_str(path)
@@ -44,9 +43,13 @@ end
 
 local has_cygpath = vim.fn.executable "cygpath" == 1
 
-local function norm_path(path)
-  -- git always returns path with forward slashes
-  if vim.fn.has "win32" == 1 then
+--- Normalise a path:
+---  windows: replace slashes with backslashes
+---   cygwin: resolve path first via cygpath
+--- @param path string
+--- @return string|nil nil on cygpath failure
+function M.norm_path(path)
+  if M.is_windows then
     -- msys2 git support
     if has_cygpath then
       path = vim.fn.system("cygpath -w " .. vim.fn.shellescape(path))
