@@ -1,5 +1,6 @@
 local M = {}
 local log = require "nvim-tree.log"
+local utils = require "nvim-tree.utils"
 
 function M.get_toplevel(cwd)
   local profile = log.profile_start("git toplevel %s", cwd)
@@ -16,7 +17,7 @@ function M.get_toplevel(cwd)
     return nil
   end
 
-  toplevel = norm_path(toplevel)
+  toplevel = utils.norm_path(toplevel)
   if toplevel == nil then
     return nil
   end
